@@ -10,6 +10,7 @@ metadata:
   configmap_name: anylog-query-configmap
   # Allows running Kubernetes remotely. If commented out, code will ignore it
   node_selector: ""
+  service_type: ClusterIP
 
 image:
   # Image secret naming
@@ -17,14 +18,14 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: 1.3.2404-arm64
+  tag: 1.3.2407-patch1
   # Image pulling policy
-  pull_policy: Always # IfNotPresent
+  pull_policy: IfNotPresent
 
 node_configs:
   general:
     # AnyLog License Key
-    LICENSE_KEY: ad5722d6a5694693ff3fa12301208358e05145280702c747a8c8c827d8054675314a68eb07908acf083473e2a183b93a74a3cd88829a092ea4e5b0504ac056b7374211c27ab5d42421028950c00750a5795996e996c2939f725e885b7a2f807d616d32cd2b6a906d740002a11c353f5ddcbd78d4fc3c90ef40d45e8f44b3932f{'company':'Customer','expiration':'2024-07-04','type':'beta'}
+    LICENSE_KEY: ""
     # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
     NODE_TYPE: query
     # Name of the AnyLog instance
@@ -62,7 +63,7 @@ node_configs:
 
   blockchain:
     # TCP connection information for Master Node
-    LEDGER_CONN: 10.0.0.251:32048
+    LEDGER_CONN: 127.0.0.1:32048
 
   advanced:
     # Whether to automatically run a local (or personalized) script at the end of the process

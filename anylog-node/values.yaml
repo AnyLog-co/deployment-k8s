@@ -10,6 +10,8 @@ metadata:
   configmap_name: anylog-node-configmap
   # Allows running Kubernetes remotely. If commented out, code will ignore it
   node_selector: ""
+  # K8s deployment service type
+  service_type: ClusterIP
 
 image:
   # Image secret naming
