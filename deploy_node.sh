@@ -66,12 +66,12 @@ elif [[ ${CMD} == start ]] ; then
     if [[ ${ANYLOG_BROKER_PORT} ]] ; then
       kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT} --address=${INTERNAL_IP} > "$HOME/port_${HOSTNAME}_${ANYLOG_BROKER_PORT}.log" 2>&1 &
     fi
-  else
-    kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_SERVER_PORT}.log" 2>&1 &
-    kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}  > "$HOME/port_${HOSTNAME}_${ANYLOG_REST_PORT}.log" 2>&1 &
-    if [[ ${ANYLOG_BROKER_PORT} ]] ; then
-      kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_BROKER_PORT}.log" 2>&1 &
-    fi
+#  else
+#    kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_SERVER_PORT}.log" 2>&1 &
+#    kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}  > "$HOME/port_${HOSTNAME}_${ANYLOG_REST_PORT}.log" 2>&1 &
+#    if [[ ${ANYLOG_BROKER_PORT} ]] ; then
+#      kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_BROKER_PORT}.log" 2>&1 &
+#    fi
   fi
 elif [[ ${CMD} == stop ]] ; then
   helm delete ${APP_NAME}

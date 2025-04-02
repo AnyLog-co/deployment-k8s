@@ -18,14 +18,14 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: 1.3.2407-patch1
+  tag: 1.3.2407-beta12-arm64
   # Image pulling policy
   pull_policy: IfNotPresent
 
 node_configs:
   general:
     # AnyLog License Key
-    LICENSE_KEY: ""
+    LICENSE_KEY: 255cb264066a62d468f1146453ef527b20902c7a67631d8638ac7a2d7d8315e94ec2bd9d3c55fbce637968109b27b3ec74ad5a5d360a0e31240286c6fb92c4e103a0fce777ce12e4459018ddb573a4f2eefca1b15e31cad86f38d7342da08e015eb75867add4de93bd71a511f18cabd77db11a5b0a99c767519e728cd1fa80c8{'company':'Customer','expiration':'2024-10-31','type':'beta'}
     # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
     NODE_TYPE: operator
     # Name of the AnyLog instance
@@ -67,7 +67,7 @@ node_configs:
 
   blockchain:
     # TCP connection information for Master Node
-    LEDGER_CONN: 127.0.0.1:32048
+    LEDGER_CONN: 10.103.162.158 :32048
 
   operator:
     # Owner of the cluster

@@ -19,9 +19,9 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: 1.3.2404
+  tag: latest
   # Image pulling policy
-  pull_policy: Always # IfNotPresent
+  pull_policy: IfNotPresent
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
   # disable AnyLog's CLI
@@ -39,13 +39,8 @@ node_configs:
   general:
     # AnyLog License Key
     LICENSE_KEY: ''
-    # Disable AnyLog's CLI interface
-    DISABLE_CLI: false
-
     # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
     NODE_TYPE: generic
-    # Name of the AnyLog instance
-    NODE_NAME: anylog-node
     # Owner of the Anylog instance
     COMPANY_NAME: New Company
 
@@ -62,6 +57,8 @@ node_configs:
   networking:
     # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
     OVERLAY_IP: ""
+    # Utilize DNS configurations instead of IPs and Ports
+    CONFIGURE_DNS: true
     # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
     ANYLOG_SERVER_PORT: 32548
     # Port address used by AnyLog's REST protocol
@@ -100,14 +97,14 @@ node_configs:
     DB_PORT: 5432
     # Whether to set autocommit data
     AUTOCOMMIT: false
-    # Whether to enable NoSQL logical database
-    ENABLE_NOSQL: false
 
-    # Advanced configs for database
     # Whether to start system_query logical database
     SYSTEM_QUERY: false
     # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
     MEMORY: true
+
+    # Whether to enable NoSQL logical database
+    ENABLE_NOSQL: false
     # Physical database type
     NOSQL_TYPE: mongo
     # Username for SQL database connection
@@ -127,7 +124,6 @@ node_configs:
     # TCP connection information for Master Node
     LEDGER_CONN: 127.0.0.1:32048
 
-    # Advanced configs for blockchain
     # How often to sync from blockchain
     SYNC_TIME: 30 second
     # Source of where the data is coming from
@@ -140,16 +136,23 @@ node_configs:
     CLUSTER_NAME: new-company-cluster1
     # Logical database name
     DEFAULT_DBMS: new_company
+
     # Operator ID
     MEMBER: ""
+
+    # Whether of not to enable HA against the cluster
+    ENABLE_HA: false
     # How many days back to sync between nodes
     START_DATE: 30
+
+    # Whether to enable partitioning
+    ENABLE_PARTITIONS: true
     # Which tables to partition - In the code, the default value is all tables associated with logical database
-    TABLE_NAME: ""
+    TABLE_NAME: "*"
     # Which timestamp column to partition by
     PARTITION_COLUMN: insert_timestamp
     # Time period to partition by
-    PARTITION_INTERVAL: 1 day
+    PARTITION_INTERVAL: 14 days
     # How many partitions to keep
     PARTITION_KEEP: 3
     # How often to check if an old partition should be removed
@@ -183,15 +186,15 @@ node_configs:
     # Column value type
     MSG_VALUE_COLUMN_TYPE: float
 
-  advanced:
-    # Whether to automatically run a local (or personalized) script at the end of the process
-    DEPLOY_LOCAL_SCRIPT: false
-    # Deploy a process that accepts syslog - requires Message broker running
-    DEPLOY_SYSLOG: false
+  monitoring:
     # Whether to monitor the node or not
-    MONITOR_NODES: false
-    # Which node type to send monitoring information to
-    MONITOR_NODE: query
+    MONITOR_NODES: true
+    # Store monitoring in Operator node(s)
+    STORE_MONITORING: false
+    # For operator, accept syslog data from local (Message broker required)
+    SYSLOG_MONITORING: false
+
+  advanced:
     # Compress JSON and SQL file(s) backup
     COMPRESS_FILE: true
     # Number of parallel queries
@@ -201,6 +204,6 @@ node_configs:
     # If buffer is not full, how long to wait until pushing data through
     THRESHOLD_TIME: 60 seconds
     # Buffer size to reach, at which point data is pushed through
-    THRESHOLD_VOLUME: 10KB
+    THRESHOLD_VOLUME: 100KB
 
 
