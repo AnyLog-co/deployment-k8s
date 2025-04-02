@@ -12,8 +12,8 @@ data:
   TEST_DIR: '{{ .Values.node_configs.directories.TEST_DIR }}'
 
   # -- INIT Type --
-  INIT_TYPE: '{{ .Values.image.init_type | default "prod" }}'
-  DISABLE_CLI: '{{ .Values.image.disable_cli | default "false" }}'
+  INIT_TYPE: '{{ .Values.image.init_type }}'
+  DISABLE_CLI: '{{ .Values.image.disable_cli }}'
   # Inform system deployment is in Kubernetes format - this set the PROXY_IP value as a valid host
   IS_KUBERNETES: 'true'
 
@@ -27,21 +27,21 @@ data:
   {{- if ne  .Values.node_configs.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
   {{ end }}
-  CONFIGURE_DNS: '{{ .Values.node_configs.networking.CONFIGURE_DNS | default "true" }}'
+  CONFIGURE_DNS: '{{ .Values.node_configs.networking.CONFIGURE_DNS }}'
 
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
-  TCP_BIND: '{{ .Values.node_configs.networking.TCP_BIND | default "false" }}'
-  TCP_THREADS: '{{ .Values.node_configs.networking.TCP_THREADS | default 6 }}'
+  TCP_BIND: '{{ .Values.node_configs.networking.TCP_BIND }}'
+  TCP_THREADS: '{{ .Values.node_configs.networking.TCP_THREADS }}'
 
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
-  REST_BIND: '{{ .Values.node_configs.networking.REST_BIND | default "false" }}'
-  REST_TIMEOUT: '{{ .Values.node_configs.networking.REST_TIMEOUT | default 30 }}'
-  REST_THREADS: '{{ .Values.node_configs.networking.REST_THREADS | default 30 }}'
+  REST_BIND: '{{ .Values.node_configs.networking.REST_BIND }}'
+  REST_TIMEOUT: '{{ .Values.node_configs.networking.REST_TIMEOUT }}'
+  REST_THREADS: '{{ .Values.node_configs.networking.REST_THREADS }}'
 
-  {{ - if .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
+  {{- if .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
   ANYLOG_BROKER_PORT: '{{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}'
-  BROKER_BIND: '{{ .Values.node_configs.networking.BROKER_BIND | default "false" }}'
-  BROKER_THREADS: '{{ .Values.node_configs.networking.BROKER_THREADS | default 6 }}'
+  BROKER_BIND: '{{ .Values.node_configs.networking.BROKER_BIND }}'
+  BROKER_THREADS: '{{ .Values.node_configs.networking.BROKER_THREADS }}'
   {{ end }}
 
   {{- if ne .Values.node_configs.networking.CONFIG_NAME "" }}
@@ -49,7 +49,7 @@ data:
   {{ end }}
 
   # -- Database --
-  DB_TYPE: '{{ .Values.node_configs.database.DB_TYPE | default "sqlite" }}'
+  DB_TYPE: '{{ .Values.node_configs.database.DB_TYPE }}'
 
   {{- if ne .Values.node_configs.database.DB_USER "" }}
   DB_USER: '{{ .Values.node_configs.database.DB_USER }}'
@@ -106,20 +106,20 @@ data:
   MEMBER: '{{ .Values.node_configs.operator.MEMBER }}'
   {{ end }}
 
-  ENABLE_HA: '{{ .Values.node_configs.operator.ENABLE_HA | default "false" }}'
-  START_DATE: '{{ .Values.node_configs.operator.START_DATE | default 30 }}'
+  ENABLE_HA: '{{ .Values.node_configs.operator.ENABLE_HA }}'
+  START_DATE: '{{ .Values.node_configs.operator.START_DATE }}'
 
-  ENABLE_PARTITIONS: '{{ .Values.node_configs.operator.ENABLE_PARTITIONS | default "true" }}'
+  ENABLE_PARTITIONS: '{{ .Values.node_configs.operator.ENABLE_PARTITIONS }}'
   {{- if ne .Values.node_configs.operator.TABLE_NAME "" }}
   TABLE_NAME: '{{ .Values.node_configs.operator.TABLE_NAME }}'
   {{ end }}
-  PARTITION_COLUMN: '{{ .Values.node_configs.operator.PARTITION_COLUMN | default "insert_timestamp" }}'
-  PARTITION_INTERVAL: '{{ .Values.node_configs.operator.PARTITION_INTERVAL | default "14 days" }}'
-  PARTITION_KEEP: '{{ .Values.node_configs.operator.PARTITION_KEEP | default 3 }}'
-  PARTITION_SYNC: '{{ .Values.node_configs.operator.PARTITION_SYNC | default 1 day }}'
+  PARTITION_COLUMN: '{{ .Values.node_configs.operator.PARTITION_COLUMN }}'
+  PARTITION_INTERVAL: '{{ .Values.node_configs.operator.PARTITION_INTERVAL }}'
+  PARTITION_KEEP: '{{ .Values.node_configs.operator.PARTITION_KEEP }}'
+  PARTITION_SYNC: '{{ .Values.node_configs.operator.PARTITION_SYNC }}'
 
   # -- MQTT --
-  ENABLE_MQTT: '{{ .Values.node_configs.mqtt.ENABLE_MQTT | default "false" }}'
+  ENABLE_MQTT: '{{ .Values.node_configs.mqtt.ENABLE_MQTT }}'
   MQTT_BROKER: '{{ .Values.node_configs.mqtt.MQTT_BROKER }}'
   MQTT_PORT: '{{ .Values.node_configs.mqtt.MQTT_PORT }}'
   MQTT_USER: '{{ .Values.node_configs.mqtt.MQTT_USER }}'
@@ -133,14 +133,14 @@ data:
   MSG_VALUE_COLUMN_TYPE: '{{ .Values.node_configs.mqtt.MSG_VALUE_COLUMN_TYPE }}'
 
   # -- Monitoring --
-  MONITOR_NODES: '{{ .Values.node_configs.monitoring.MONITOR_NODES | default "true" }}'
-  STORE_MONITORING: '{{ .Values.node_configs.monitoring.STORE_MONITORING | default "false" }}'
-  SYSLOG_MONITORING: '{{ .Values.node_configs.monitoring.SYSLOG_MONITORING | default "false" }}'
+  MONITOR_NODES: '{{ .Values.node_configs.monitoring.MONITOR_NODES }}'
+  STORE_MONITORING: '{{ .Values.node_configs.monitoring.STORE_MONITORING }}'
+  SYSLOG_MONITORING: '{{ .Values.node_configs.monitoring.SYSLOG_MONITORING }}'
 
   #-- Advanced --
-  COMPRESS_FILE: '{{ .Values.node_configs.advanced.COMPRESS_FILE | default "true" }}'
-  QUERY_POOL: '{{ .Values.node_configs.advanced.QUERY_POOL | default 6 }}'
-  WRITE_IMMEDIATE: '{{ .Values.node_configs.advanced.WRITE_IMMEDIATE | default "false" }}'
-  THRESHOLD_TIME: '{{ .Values.node_configs.advanced.THRESHOLD_TIME | default "60 seconds" }}'
-  THRESHOLD_VOLUME: '{{ .Values.node_configs.advanced.THRESHOLD_VOLUME | default "100KB" }}'
+  COMPRESS_FILE: '{{ .Values.node_configs.advanced.COMPRESS_FILE }}'
+  QUERY_POOL: '{{ .Values.node_configs.advanced.QUERY_POOL }}'
+  WRITE_IMMEDIATE: '{{ .Values.node_configs.advanced.WRITE_IMMEDIATE }}'
+  THRESHOLD_TIME: '{{ .Values.node_configs.advanced.THRESHOLD_TIME }}'
+  THRESHOLD_VOLUME: '{{ .Values.node_configs.advanced.THRESHOLD_VOLUME }}'
 

@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    secrets:
+      - postgres_user
+      - postgres_password
+    environment:
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+secrets:
+  postgres_user:
+    external: true
+  postgres_password:
+    external: true
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  my_network:
+    driver: overlay

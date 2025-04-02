@@ -1,23 +1,23 @@
 SHELL := /bin/bash
 
+# Define default values for NODE_TYPE and INTERNAL_IP
+NODE_TYPE ?= generic
+INTERNAL_IP ?= 127.0.0.1
+
+# Dynamically determine the CONFIG_FILE based on NODE_TYPE
+CONFIG_FILE := configurations/$(NODE_TYPE).yaml
+
 # Only extract these values if we're not running package-related commands (including "package")
-ifneq ($(filter package pkg-%,$(MAKECMDGOALS)),)
-    # Package-related commands, skip extraction of values
+ifneq ($(filter help package pkg-%,$(MAKECMDGOALS)),)
+    # Skip extraction of values for package-related commands
 else
-	# Define default values for NODE_TYPE and INTERNAL_IP
-	NODE_TYPE ?= generic
-	INTERNAL_IP ?= 127.0.0.1
-
-	# Dynamically determine the CONFIG_FILE based on NODE_TYPE
-	CONFIG_FILE := configurations/$(NODE_TYPE).yaml
-
-	NAMESPACE := $(shell grep "namespace" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
-	SERVICE_NAME := $(shell grep "service_name" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
-	APP_NAME := $(shell grep "app_name" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
-
-	ANYLOG_SERVER_PORT $(shell grep "ANYLOG_SERVER_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
-	ANYLOG_REST_PORT $(shell grep "ANYLOG_REST_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
-	ANYLOG_BROKER_PORT := $(shell grep "ANYLOG_BROKER_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    # Extract values from the config file
+    NAMESPACE := $(shell grep "namespace" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    SERVICE_NAME := $(shell grep "service_name" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    APP_NAME := $(shell grep "app_name" $(CONFIG_FILE) | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    ANYLOG_SERVER_PORT := $(shell grep "ANYLOG_SERVER_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    ANYLOG_REST_PORT := $(shell grep "ANYLOG_REST_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
+    ANYLOG_BROKER_PORT := $(shell grep "ANYLOG_BROKER_PORT" $(CONFIG_FILE)  | awk -F ":" '{print $$2}' | awk '{gsub(" ", ""); print}')
 endif
 
 # Help target to generate help (if needed)
@@ -29,10 +29,12 @@ help:
 	@echo "  clean         - Stop and remove volumes"
 	@echo "  pkg-volume    - Package the volume chart"
 	@echo "  pkg-container - Package the container chart"
+	@echo ""
+	@echo "Example: make up NODE_TYPE=master INTERNAL_IP=10.0.0.251 "
 
 package: pkg-volume pkg-container
 
-up: start-volume start-container
+up: create-volume start-container
 
 down: stop-container
 
@@ -46,27 +48,21 @@ pkg-container:
 	@echo "Packaging container chart..."
 	helm package ./anylog-node
 
-start-volume:
-	@echo "Starting volume with Helm..."
-	helm install ./anylog-node-volumes-0.0.0.tgz -f $(CONFIG_FILE) --name-template $(APP_NAME)-volume
-
 start-container:
-	@echo "Starting container with Helm..."
-	helm install ./anylog-node-0.0.0.tgz -F $(CONFIG_FILE) --name-template $(APP_NAME)
-	echo "Waiting for the pod to be in the 'Running' state..."
-	$(MAKE) set-ports
-
+	helm install ./anylog-node-1.03.24.tgz -f $(CONFIG_FILE) --name-template $(APP_NAME); \
+	$(MAKE) connect-ports
 stop-container:
-	@echo "Stopping container..."
-	helm uninstall $(APP_NAME)
+	helm delete $(APP_NAME)
 	$(MAKE) disconnect-ports
 
+create-volume:
+	helm install ./anylog-node-volumes-0.0.0.tgz -f $(CONFIG_FILE) --name-template $(APP_NAME)-volume
 remove-volume:
-	@echo "Removing volume..."
-	helm uninstall $(APP_NAME)-volume
+	helm delete $(APP_NAME)-volume
 
-set-ports:
+connect-ports:
 	@echo "Waiting for pod to reach 'Running' state..."
+	@echo "TCP: ${ANYLOG_SERVER_PORT} | REST: ${ANYLOG_REST_PORT} | Broker: ${ANYLOG_BROKER_PORT}"
 	while true; do \
 		POD_STATUS=$$(kubectl get pod -l app=$(APP_NAME) -o jsonpath="{.items[0].status.phase}" 2>/dev/null); \
 		echo $$POD_STATUS; \
@@ -80,8 +76,8 @@ set-ports:
 	if [ -n "$(INTERNAL_IP)" ]; then \
 		kubectl port-forward -n $(NAMESPACE) service/$(SERVICE_NAME) $(ANYLOG_SERVER_PORT):$(ANYLOG_SERVER_PORT) --address=$(INTERNAL_IP) > "$$HOME/port_$(HOSTNAME)_$(ANYLOG_SERVER_PORT).log" 2>&1 & \
 		kubectl port-forward -n $(NAMESPACE) service/$(SERVICE_NAME) $(ANYLOG_REST_PORT):$(ANYLOG_REST_PORT) --address=$(INTERNAL_IP) > "$$HOME/port_$(HOSTNAME)_$(ANYLOG_REST_PORT).log" 2>&1 & \
-		if [ -n "$(BROKER_PORT)" ]; then \
-			kubectl port-forward -n $(NAMESPACE) service/$(SERVICE_NAME) $(BROKER_PORT):$(BROKER_PORT) --address=$(INTERNAL_IP) > "$$HOME/port_$(HOSTNAME)_$(BROKER_PORT).log" 2>&1 & \
+		if [ -n "$(ANYLOG_BROKER_PORT)" ]; then \
+			kubectl port-forward -n $(NAMESPACE) service/$(SERVICE_NAME) $(ANYLOG_BROKER_PORT):$(ANYLOG_BROKER_PORT) --address=$(INTERNAL_IP) > "$$HOME/port_$(HOSTNAME)_$(ANYLOG_BROKER_PORT).log" 2>&1 & \
 		fi; \
 	fi
 
